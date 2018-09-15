@@ -1,0 +1,24 @@
+Dependent/outcome
+  - deathRate
+  
+Independent: variables that may affect deathRate that could be targeted by public policy (Analysis of key variables)
+  - medIncome
+  - povertyPercent
+  - binnedInc
+  - PctPrivateCoverage
+  - PctEmpPrivCoverage
+  - PctPublicCoverage
+  - PctUnemployed16_over
+  - Education (high school, some college, bachelor degree)
+
+ Confounding / control: variables that may affect both deathRate and other independent variables, confounding the relationships identified above (Analysis of secondary variables)
+  - avgAnnCount (mean incidences per county)
+  - MedianAge
+  - MedianAgeMale
+  - MedianAgeFemale
+  - Geography
+  - PercentMarried
+  - PctWhite
+  - PctBlack
+  - PctAsian
+  - PctMarriedHouseholds
