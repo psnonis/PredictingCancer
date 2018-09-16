@@ -1,0 +1,30 @@
+### INTRODUCTION
+
+- Cancer = read.csv('cancer.csv', row.names = 1)
+- Split county, state by ", "
+- Scatterplot matrix, add deathRate
+
+
+
+### ANALYSIS OF KEY VARIABLES
+
+Death rate
+	- Normal distribution
+	- No apparent errors
+
+Median income
+	- Unimodal, Positively skewed
+	- No aparent errors
+
+Binned income
+	- Bin sizes don't make sense
+		- Different sizes per bin
+		- Similar number of observations per bin
+		- Cutoffs are not multiples of 10, making them hard to read
+	- Solution: created a new binning variable
+		- From 20k to 130k
+		- Bin size: 10k
+		- Resulting variable is unimodal, positively skewed
+		
+Poverty percent
+	- 
