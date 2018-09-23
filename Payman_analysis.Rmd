@@ -1,13 +1,24 @@
-#' ---
-#' title: "W203 Lab 1, Cancer EDA"
-#' author: "Payman 'Roghani"
-#' date: "8/16/2018"
-#' ---
+---
+title: "An Exploratory Analysis of Cancer Incidence and Mortality"
+author: "Ramiro Cadavid, Pri Nonis, Payman Roghani"
+date: "September 24, 20168"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
 
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(car)
+```
+
 
 ## Introduction
 
@@ -17,11 +28,9 @@ In this project our efforts are focused on the analysis of data included in the 
 
 
 ## Data
-(Question: Do we need to explain every step? Or the codes are supposed to be self-explanatory?)
 
 ```{r}
 Cancer <- read.csv('cancer.csv')
-head(Cancer)
 ```
 
 ```{r}
@@ -31,13 +40,10 @@ str(Cancer)
 
 ```{r}
 colnames(Cancer)
-```
-
-
-```{r}
 nrow(Cancer)
 ncol(Cancer)
 ```
+
 
 The cancer.csv file 29 variables (30 columns, including the first one that has the number of observations) and 3047 observations, where each observation (i.e. row) includes data for a county across the US. The varaiblaes are mostly numbers and integers, except for 2 thar factors (binnedInc and Geography). Below, we have explain the variables in detail and provide our assessment of the quality of the data.  
 
@@ -45,52 +51,68 @@ The cancer.csv file 29 variables (30 columns, including the first one that has t
 
 **Variables**
 
-* avgAnnCount: The average number of new cancer cases per year per county for years 2009-2013
-* medIncome: Median income per county
-* popEst2015: Estimated population by county 2015
-* povertyPercent: Percent of population below poverty line
-* binnedInc: ???
-* MedianAge: Median age per county
-* MedianAgeMale: Median age among males per county    
-* MedianAgeFemale: Median age among females per county  
-* Geography: Counyt, State
-* AvgHouseholdSize: Average household size per county
-* PercentMarried: Percentage of marreid population
-* PctNoHS18_24: Percentage of 18-24 year old population with no high school education
-* PctHS18_24: Percentage of 18-24 year old population with high school education
-* PctSomeCol18_24: Percentage of 18-24 year old population with some college education
-* PctBachDeg18_24: Percentage of 18-24 year old population with bachelor's degree 
-* PctHS25_Over: Percentage of population above 24 years old with high school education
-* PctBachDeg25_Over: Percentage of population above 24 years old with bachelor's degree 
-* PctEmployed16_Over: Percentage of population above 15 years old who have jobs
-* PctUnemployed16_Over: Percentage of population above 15 years old with no jobs
-* PctPrivateCoverage: Percentage of the population with private insurance coverage
-* PctEmpPrivCoverage: ercentage of the population with employer-sponsored insurance coverage
-* PctPublicCoverage: Percentage of the population with public insurance coverage
-* PctWhite: Percentage of white population by county
-* PctBlack: Percentage of African-American population by county
-* PctAsian: Percentage of Asian population by county
-* PctOtherRace: Percentage of other races by county
-* PctMarriedHouseholds: Percentage of married hoseholds per county
-* BirthRate: Birth rate per county
-* deathRate: Death rate per county       
+* Cancer data:
+    + avgAnnCount: The average number of new cancer cases per year per county for years 2009-2013
+    + popEst2015: Estimated population by county 2015
 
-**Our obeservations**
+* Economic status:
+    + medIncome: Median income per county
+    + povertyPercent: Percent of population below poverty line
+    + binnedInc: ???
 
-Evaluate the data quality. Are there any issues with the data? Explain how you handled these potential issues.
-Explain whether any data processing or preparation is required for your data set.
+* Population age and gender:
+    + MedianAge: Median age per county
+    + MedianAgeMale: Median age among males per county    
+    + MedianAgeFemale: Median age among females per county  
+
+* Location:
+    + Geography: Counyt, State
+
+* Marital status:
+    + PercentMarried: Percentage of marreid population
+    + PctMarriedHouseholds: Percentage of married hoseholds per county
+
+* Education:
+    + PctNoHS18_24: Percentage of 18-24 year old population with no high school education
+    + PctHS18_24: Percentage of 18-24 year old population with high school education
+    + PctSomeCol18_24: Percentage of 18-24 year old population with some college education
+    + PctBachDeg18_24: Percentage of 18-24 year old population with bachelor's degree 
+    + PctHS25_Over: Percentage of population above 24 years old with high school education
+    + PctBachDeg25_Over: Percentage of population above 24 years old with bachelor's degree 
+
+* Houshold size:
+    + AvgHouseholdSize: Average household size per county
+
+* Employment status:
+    + PctEmployed16_Over: Percentage of population above 15 years old who have jobs
+    + PctUnemployed16_Over: Percentage of population above 15 years old with no jobs
+
+* Health insurance coverage:
+    + PctPrivateCoverage: Percentage of the population with private insurance coverage
+    + PctEmpPrivCoverage: ercentage of the population with employer-sponsored insurance coverage
+    + PctPublicCoverage: Percentage of the population with public insurance coverage
+
+* Race:
+    + PctWhite: Percentage of white population by county
+    + PctBlack: Percentage of African-American population by county
+    + PctAsian: Percentage of Asian population by county
+    + PctOtherRace: Percentage of other races by county
+
+* Birth and death rates: 
+    + BirthRate: Birth rate per county
+    + deathRate: Death rate per county       
 
 
-* While the cancer incidence rate is the mean for years 2003-2009, the population by county is for 2015 and other variables do not have date stamps. Ideally all variables should have been from the same time period.
-* There is no definition for incidence rate per county for the avgAnnCount variable. We wil assume the numbers indicate....
-* The binnedInc variable has 10 levels that seem arbitrary. It is not clear why the income bins have been defined this way.
-* The maximum median age shows a value of 624, which is clearly a wrong number. We actually identified a total of 30 values in this column that are above 100; therefore, we will replace such values with NA in our analysis.
-* The minimium average household size is 0.0221, which does not make sense, since we don't expect a houshold size below 1. There are 61 values in this column that are below 1, which we will replace with NA in our analysis.  
-* The PctSomeCol18_24 variable has too many NA values (2285 out 3047). We will need to take this into account during our analysis. 
-* It is not clear how the birth rate is caculated and what exactly BirthRate represents. Often, the birth rate is defined as childbirths per 1,000 people each year, but applying that here would not give us the right number. For example in Los Angeles County with the population of 10,170,292, there were 124,641 live biths in 2015, which translates into a birth rate of 12.25 (BR = (b ÷ p) X 1,000). However, the birth rate in our data shows a value of 4.7, which is probably the ratio of women aged 15-50 years old who gave birth in 2015 (source: http://www.towncharts.com/California/Demographics/Los-Angeles-County-CA-Demographics-data.html)
-* Based on our assessment, we beliege the deathRate variable should represent the number of deaths due cancer per 100,000 population per county. We looked at the figure for Kings County, NY (173.6) and the number in our data is closer to cancer death rate (140.3), as opposed to overal death rate (603.1).
-* PctEmpPrivCoverage is a subset of PctPrivateCoverage
-* Overlap between public and private insurance
+**Evaluation of Dataset and Variables**
+
+Based on the outputs from diagnostic and summary statistics functions that we used above and further analysis explained in later sections of this report, below we describe our evaluation of dataset and its variables. Since definitions of most variables were not provided to us, our first step was to ensure understanding of what such variables represent. We also evaluated the data to identify potentially erronoes values and determine what variables are key to our analysis and whether we the dataset has the right variables to help answer the project questions or we would need to create additional variables needed to achieve that goal.  
+
+>>>from the assignment document: Evaluate the data quality. Are there any issues with the data? Explain how you handled these potential issues. Explain whether any data processing or preparation is required for your data set.
+>>>create references between bullet points below and analysis done to support our evaluation/assumptions
+
+* While avgAnnCount represents the mean for years 2009-2013, the population by county is for 2015 and other variables do not have date stamps. Ideally all variables should have been from the same time period.
+
+* There is no definition for incidence rate per county for the avgAnnCount variable. Since the sum of all values is 1,847,514 and based on cancer.gov data the average number of cases for years 2009-2013 is 1617144, we wil assume this variable represents the actual count of new cases. Therefore, in our analysis we created a new variable called "..." to reprsent the indidence rate of cancer per county (number of new cases per 100,000 people).
 
 ```{r}
 #compare with CDC and cancer.gov
@@ -99,21 +121,99 @@ sum(Cancer$avgAnnCount)
 ```
 
 
+* Cheking the actual cancer stats reported by health authorities
+Number of New Cases of Cancer and Deaths due to Cancer
+Source: Cancer.gov
+
+Year	New Cases Deaths 
+2009	1660290	562340
+2010	1529560	569490
+2011	1596670	571950
+2012	1638910	577190
+2013	1660290	580350
+
+```{r}
+#calculate mean cancer death count for years 2009-2013 based on cancer.gov data, in order to cofirm our assumption for the definition of avgAnnCount variable  
+incidence_cancer <- c(1660290, 1529560, 1596670, 1638910, 1660290)
+mean(incidence_cancer)
+
+```
+
+
+* Through our assessment we realized that the number of new cases for 6 counties were greater than the those counties population. Looking at the 6 observations, we realized that the the new case count for all these 6 counties is exactly the same number (1962.667684). In fact there are a total of Y counties that have exactly the same average number of new cases, which is probably an erroneous value. We decided to replace all of them with NA in our analysis.
+
+
+```{r}
+sum(Cancer$avgAnnCount > Cancer$popEst2015, na.rm = TRUE)
+```
+
+```{r}
+Cancer$avgAnnCount[Cancer$avgAnnCount == 1962.667684] <- NA
+Cancer$incidenceRate <- Cancer$avgAnnCount / Cancer$popEst2015 * 100000
+```
+
+```{r}
+sum(Cancer$avgAnnCount > Cancer$popEst2015, na.rm = TRUE)
+```
+
+
+* We checked the Geography variable to identify potential duplicates. Since the number of unique values in this column is equal to the total number of observations, there can not be any duplicates in this column.
+* The binnedInc variable has 10 levels that seem arbitrary. It is not clear why the income bins have been defined this way.
+
+```{r}
+#checking if there are duplicates in counties. 
+length(unique(Cancer[["Geography"]]))
+```
+
+
+* The maximum median age shows a value of 624, which is clearly a wrong number. We actually identified a total of 30 values in this column that are above 100; therefore, we will replace such values with NA in our analysis.
+
+```{r}
+age_error = subset(Cancer, MedianAge > 100)
+nrow(age_error)
+```
+
+```{r}
+Cancer$AvgHouseholdSize[Cancer$AvgHouseholdSize < 1] = NA
+```
+
+
+* The minimium average household size is 0.0221, which does not make sense, since we don't expect a houshold size below 1. There are 61 values in this column that are below 1, which we will replace with NA in our analysis.  
+
+```{r}
+household_error = subset(Cancer, AvgHouseholdSize < 1)
+nrow(household_error)
+```
+
+```{r}
+Cancer$MedianAge[Cancer$MedianAge > 100] = NA
+```
+
+
+* The PctSomeCol18_24 variable has too many NA values (2285 out 3047). We will need to take this into account during our analysis. 
+
+
+* It is not clear how the birth rate is caculated and what exactly BirthRate represents. Often, the birth rate is defined as childbirths per 1,000 people each year, but applying that here would not give us the right number. For example in Los Angeles County with the population of 10,170,292, there were 124,641 live births in 2015, which translates into a birth rate of 12.25 (BR = (b ÷ p) X 1,000). However, the birth rate in our data shows a value of 4.7, which is probably the ratio of women aged 15-50 years old who gave birth in 2015 (source: http://www.towncharts.com/California/Demographics/Los-Angeles-County-CA-Demographics-data.html)
 
 ```{r}
 which(Cancer$popEst2015 > 10000000)
-Cancer[1000,]
+Cancer[1000,'BirthRate']
 ```
+
+
 ```{r}
 #LA County birth rate. Formula: BR = (b ÷ p) X 1,000
 124641/10170292*1000
 ```
 
+
+* Based on our assessment, we beliege the deathRate variable should represent the number of deaths due to cancer per 100,000 population per county. We looked at the figure for Kings County, NY (173.6) and the number in our data is closer to cancer death rate (140.3), as opposed to overal death rate (603.1). Based on this assumption, we also calculated the total death in a new column, calling the variable death_count (deathRate * popEst2015/100000) and total is 525347, which is close to the figure reported by cancer.gov (589,430), futher confirming our assumption regarding deathRate variable is most probably correct.
+
+
 ```{r}
 #Kings County, NY
-Cancer[388,]
+Cancer[388, 'deathRate']
 ```
-
 
 ```{r}
 #Kings County, NY
@@ -125,88 +225,58 @@ Cancer[388,]
 
 
 ```{r}
-#checking if there are duplicates in counties. 
-length(unique(Cancer[["Geography"]]))
-```
-The number of rows equals the number of unique counties, so there is no duplicates.
-
-```{r}
-age_error = subset(Cancer, MedianAge > 100)
-nrow(age_error)
+#comparing total death count in our dataset with official stats reported by officials
+Cancer$death_count <- Cancer$deathRate * Cancer$popEst2015/100000
+sum(Cancer$death_count)
+# 2015 cancer mortality reported by Cancer.gov: 589,430
 ```
 
-```{r}
-#does mean household size < 1 make sense?
-household_error = subset(Cancer, AvgHouseholdSize < 1)
-nrow(household_error)
-```
+
+* We assume that the values in PctEmpPrivCoverage column represent a subset of values The sum of values in PctPrivateCoverage column, since the sum of these two variables in some rows is above 100. (show the calculation)
+* Also, we assume that there is an overlap between people that have public health insurance and those with private health insurance, since the sum of PctPrivateCoverage and PctPublicCoverage in some rows is above 100. (show the calculation)
 
 ```{r}
-#checking the number of values above 100 in the MedianAge column
-Cancer$MedianAge[Cancer$MedianAge > 100] = NA
+#adding up health insurance coverage variables, to makes sence of such variables
+Cancer$Pct_insured <- Cancer$PctPrivateCoverage + Cancer$PctPublicCoverage
+Cancer$Pct_PersonalIsure <- Cancer$PctPrivateCoverage + Cancer$PctEmpPrivCoverage
+print('Cancer$Pct_insured')
+summary(Cancer$Pct_insured)
+print('Cancer$Pct_PersonalIsure')
+summary(Cancer$Pct_PersonalIsure)
 ```
 
-```{r}
-#checking the number of values below 1 in the AvgHouseholdSize column
-Cancer$AvgHouseholdSize[Cancer$AvgHouseholdSize < 1] = NA
-```
+As seen in the summary statistics above, the Max for the 2 variables are above 100. 
 
-```{r}
-library(dplyr)
-library(tidyr)
-```
+
+
+* other: removal of outliers? check with team
+
+
 
 ```{r}
 #adding 2 separate columns for County and State, in order to State-wide analysis of the data
-Cancer2 <- Cancer %>% separate(Geography, c("County", "State"), sep = ",", remove = FALSE)
+Cancer <- Cancer %>% separate(Geography, c("County", "State"), sep = ",", remove = FALSE)
 ```
+
 
 
 ```{r}
-#cheking for potentially erroneous values in avgAnnCount
-sum(Cancer2$avgAnnCount > Cancer2$popEst2015, na.rm = TRUE)
+# Cancer$above_HS_18_24 <- Cancer$PctSomeCol18_24 + PctBachDeg18_24 
+# Cancer$below_HS_18_24 <- Cancer$PctPrivateCoverage - Cancer$PctEmpPrivCoverage
 ```
 
 
-```{r}
-Cancer2$avgAnnCount[Cancer2$avgAnnCount == 1962.667684] <- NA
-Cancer2$incidenceRate <- Cancer2$avgAnnCount / Cancer2$popEst2015 * 100000
-```
-
-```{r}
-sum(Cancer2$avgAnnCount > Cancer2$popEst2015, na.rm = TRUE)
-```
-
-```{r}
-colnames(Cancer2)
-#summary(Cancer2)
-#str(Cancer2)
-```
-
-```{r}
-# Cancer2$Pct_insured <- Cancer2$PctPrivateCoverage + Cancer2$PctPublicCoverage
-# Cancer2$Pct_PersonalIsure <- Cancer2$PctPrivateCoverage - Cancer2$PctEmpPrivCoverage
-```
-
-```{r}
-# Cancer2$above_HS_18_24 <- Cancer2$PctSomeCol18_24 + PctBachDeg18_24 
-# Cancer2$below_HS_18_24 <- Cancer2$PctPrivateCoverage - Cancer2$PctEmpPrivCoverage
-```
-
-```{r}
-library(car)
-```
+# Multiavriate analysis
 
 ```{r}
 scatterplotMatrix( ~ incidenceRate + deathRate +
                    + PctPrivateCoverage + PctEmpPrivCoverage + PctPublicCoverage
                    ,diagonal=list(method="histogram"), 
-                   data = Cancer2, main = "Scatterplot Matrix to Understand the Impact of Insrance Coverage")
+                   data = Cancer, main = "Scatterplot Matrix to Understand the Impact of Insrance Coverage")
 ```
 
-
 ```{r}
-cor(Cancer2[ , c("incidenceRate", "deathRate",
+cor(Cancer[ , c("incidenceRate", "deathRate",
                  "PctPrivateCoverage", "PctEmpPrivCoverage", "PctPublicCoverage")], 
                   use = "complete.obs")
 ```
@@ -219,10 +289,6 @@ Payman's note:
 * Note: for future recommendations, we should also consider the major changes in public health insurance coverage due to Affordable Care Act, which aims to increase the quality of care through establishment of pay-for-performance and value-based healthcare policy. 
 
 
-```{r}
-insurance_error = subset(Cancer2, Pct_insured > 100)
-nrow(insurance_error)
-```
 
 
 
