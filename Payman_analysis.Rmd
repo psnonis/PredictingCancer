@@ -184,10 +184,14 @@ colnames(Cancer2)
 ```
 
 ```{r}
-Cancer2$Pct_insured <- Cancer2$PctPrivateCoverage + Cancer2$PctPublicCoverage
-Cancer2$Pct_PersonalIsure <- Cancer2$PctPrivateCoverage - Cancer2$PctEmpPrivCoverage
+# Cancer2$Pct_insured <- Cancer2$PctPrivateCoverage + Cancer2$PctPublicCoverage
+# Cancer2$Pct_PersonalIsure <- Cancer2$PctPrivateCoverage - Cancer2$PctEmpPrivCoverage
 ```
 
+```{r}
+# Cancer2$above_HS_18_24 <- Cancer2$PctSomeCol18_24 + PctBachDeg18_24 
+# Cancer2$below_HS_18_24 <- Cancer2$PctPrivateCoverage - Cancer2$PctEmpPrivCoverage
+```
 
 ```{r}
 library(car)
@@ -201,20 +205,18 @@ scatterplotMatrix( ~ incidenceRate + deathRate +
 ```
 
 
-
-```{r}
-# scatterplotMatrix( ~ avgAnnCount + medIncome + povertyPercent + binnedInc
-#                    + MedianAge + PctPrivateCoverage + PctEmpPrivCoverage 
-#                    + PctPublicCoverage,diagonal=list(method="histogram"), 
-#                    data = Cancer2, main = "Scatterplot Matrix for Key Cancer Data Variables")
-```
-
 ```{r}
 cor(Cancer2[ , c("incidenceRate", "deathRate",
                  "PctPrivateCoverage", "PctEmpPrivCoverage", "PctPublicCoverage")], 
                   use = "complete.obs")
 ```
 
+Payman's note:
+* There is a positive correlation between incidenceRate and PctPublicCoverage (0.49), while the corrleation between incidenceRate and PctPrivateCoverage is almost zero (-0.22 for PctEmpPrivCoverage)
+* There is a positive correlation between deathRate and PctPublicCoverage (0.40), while the corrleation between incidenceRate and PctPrivateCoverage is negative (-0.36)
+* Based on this we can make a conclusion that public health insurance probably results in higher indicdence of cancer and mortality
+* Caveat: the type of health insurance coverage (public vs private) is often affected by other factors. For example for gegraphic locations with low average employmen/income, we can expect higher public insurance coverage. 
+* Note: for future recommendations, we should also consider the major changes in public health insurance coverage due to Affordable Care Act, which aims to increase the quality of care through establishment of pay-for-performance and value-based healthcare policy. 
 
 
 ```{r}
