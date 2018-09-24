@@ -1,14 +1,26 @@
+setwd('.')
+
 source('install.R')
 
 source('load.R')
+
+# Maps
+
+source('maps.R')
+
+map1()
+map2()
+map3()
 
 # Univariate Analysis
 
 source('plots.R')
 
+showtext.auto(enable = T)
+
 yxScatter(Cancer$avgAnnCount)
 yxScatter(Cancer$MedianAge)
-yxScatter(Cancer$incidence)
+yxScatter(Cancer$incidenceRate)
 
 # Multivariate Analysis
 

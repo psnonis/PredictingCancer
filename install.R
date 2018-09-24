@@ -14,6 +14,6 @@ import('psych')
 import('visNetwork')
 import('reshape2')
 import('showtext')
+import('maptools')
 
 font.add.google('Gloria Hallelujah', 'gloria')
-showtext.auto()
