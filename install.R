@@ -14,6 +14,7 @@ import('psych')
 import('visNetwork')
 import('reshape2')
 import('showtext')
-import('maptools')
+import('mapproj')
+import('RColorBrewer')
 
 font.add.google('Gloria Hallelujah', 'gloria')
