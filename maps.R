@@ -6,11 +6,17 @@ map_setup <- function()
     CShape$County    <- CShape$county_name
     CShape$Geography <- sprintf("%s, %s", CShape$county_name, CShape$state_name)
 
-    CanMap <<- left_join(Cancer, CShape, by = 'Geography') # export to global scope
+    CanFoo                                              <- Cancer
+    CanFoo.incidenceMean                                <- mean(CanFoo$avgAnnCount[CanFoo$avgAnnCount!=1962.667684] / CanFoo$popEst2015[CanFoo$avgAnnCount!=1962.667684] * 100000)
+    CanFoo$avgAnnCount[CanFoo$avgAnnCount==1962.667684] <- CanFoo.incidenceMean * CanFoo$popEst2015[CanFoo$avgAnnCount==1962.667684] / 100000
+    CanFoo$incidenceRate                                <- CanFoo$avgAnnCount / CanFoo$popEst2015 * 100000
+    CanFoo$deathRate                                    <- CanFoo$deathRate
 
-    CanMap.incidenceRate                                  <<- Cancer$avgAnnCount / Cancer$popEst2015 * 100000
-    CanMap.incidenceRate[Cancer$avgAnnCount==1962.667684] <<- NA
-    CanMap.deathRate                                      <<- Cancer$deathRate
+    CanMap                 <<- left_join(CanFoo, CShape, by = 'Geography') # export to global scope
+    CanMap.deathLimits     <<- c(min(CanFoo$deathRate),
+                                 max(CanFoo$deathRate))
+    CanMap.incidenceLimits <<- c(min(CanFoo$incidenceRate),
+                                 max(CanFoo$incidenceRate))
 
     print('Loaded Cancer Map')
 }
@@ -31,8 +37,7 @@ map_ca_deathRate <- function()
         geom_polygon(color = NA, size = 0.05) +
         coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
         scale_fill_gradientn(colors = rev(brewer.pal(11, 'RdYlGn')),
-                             limits = c(min(CanMap.deathRate),
-                                        max(CanMap.deathRate)))
+                             limits = CanMap.deathLimits)
 }
 
 map_wv_ky_deathRate <- function()
@@ -51,8 +56,7 @@ map_wv_ky_deathRate <- function()
         geom_polygon(color = NA, size = 0.05) +
         coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
         scale_fill_gradientn(colors = rev(brewer.pal(11, 'RdYlGn')),
-                             limits = c(min(CanMap.deathRate),
-                                        max(CanMap.deathRate)))
+                             limits = CanMap.deathLimits)
 }
 
 map_us_deathRate <- function()
@@ -70,8 +74,7 @@ map_us_deathRate <- function()
         geom_polygon(color = NA, size = 0.05) +
         coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
         scale_fill_gradientn(colors = rev(brewer.pal(11, 'RdYlGn')),
-                             limits = c(min(CanMap.deathRate),
-                                        max(CanMap.deathRate)))
+                             limits = CanMap.deathLimits)
 }
 
 map_us_incidenceRate <- function()
@@ -89,6 +92,5 @@ map_us_incidenceRate <- function()
         geom_polygon(color = NA, size = 0.05) +
         coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
         scale_fill_gradientn(colors = rev(brewer.pal(11, 'RdYlGn')),
-                             limits = c(min(CanMap.incidenceRate),
-                                        max(CanMap.incidenceRate)))
+                             limits = CanMap.incidenceLimits)
 }

@@ -60,7 +60,6 @@ Taking a first look at the data, we wanted to do some spasial data exploration. 
 Before we could do this we needed to augment our dataset with additional geocoordinate details. We were able to obtain that data from the website of the Census Beauru at census.gov/geo/maps-data. After some minor data manipulations, we were able to join the two datasets using the **Geography** variable.
 
 ```{r}
-source("load.R")
 source("maps.R")
 map_setup()
 ```
@@ -321,7 +320,7 @@ Cancer$AvgHouseholdSize[Cancer$AvgHouseholdSize<1] <- Cancer$AvgHouseholdSize[Ca
 
 ### Average Annual Count
 
-The Average Annual Count variable which designate the number of new cancer cases within the county contained a significant number of values that seems to be some data inputing error, they were all 1962.667684. This value is too large to be resonably considered a valid incidence rate. So we explored several approaches to correct these values.
+The Average Annual Count variable which designate the number of new cancer cases within the county contained a significant number of values that seems to be some data inputing error, they were all 1962.667684. This value is too large to be resonably considered a valid incidence rate. These datapoints were from only 3 states. So we explored several approaches to correct these values.
 
 * **Keep the Anomalous Values**
   This would however change the sample size of variables we want to compare with each other.
@@ -725,6 +724,11 @@ yxScatter(Cancer$PctBachDeg25_Over, Cancer$deathRate, "Bachelor's Degree (>24)")
 
 Throughout the analyses above, we began to identify that some of the relationships found between `deathRate` and other variables may not only be capturing the direct relationship betwee these variables but of additional variable(s) that may be impacting both. To further assess this systematically, the following network visualization shows the variables that have a correlation higher than 0.4, where each node represents a different variable and each vertex indicates the strength of the relationship between the variables connected.
 
+```{r}
+
+visNetwork(nodes,links)
+
+```
 
 ![secondary_analysis](secondary_analysis.png)
 
