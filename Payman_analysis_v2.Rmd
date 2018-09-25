@@ -1,11 +1,10 @@
 ---
 title: "An Exploratory Analysis of Cancer Incidence and Mortality to Identify High-Risk Communities and Improve Survival "
 author: "Ramiro Cadavid, Pri Nonis, Payman Roghani"
-date: "September 24, 20168"
+date: "September 24, 2018"
 output:
+  html_document:default
   pdf_document: default
-  html_document:
-    df_print: paged
 ---
 
 ---
@@ -25,8 +24,8 @@ library(xtable)
 ## Introduction
 
 In this project our efforts are focused on the analysis of data included in the csv file provided, to primarily understand the potential relationship between different parameters and the incidences of cancer across counties in the US. The main objectives are:
-1. To understand factors that predict cancer mortality rate, with the ultimate aim of identifying communities for social interventions.
-2. To determine which interventions are likely to have the most impact.
+>1. To understand factors that predict cancer mortality rate, with the ultimate aim of identifying communities for social interventions.
+>2. To determine which interventions are likely to have the most impact.
 
 
 ## Cancer Data
@@ -38,12 +37,12 @@ Cancer <- read.csv('cancer.csv')
 ```{r collapse = TRUE, comment=NA}
 summary(Cancer) #summary statistics
 ```
-
+---
 
 ```{r collapse = TRUE, comment=NA}
 str(Cancer, max.level = 1, strict.width = "wrap")
 ```
-
+---
 
 ```{r collapse = TRUE, comment=NA}
 colnames(Cancer)
@@ -121,16 +120,27 @@ Based on the outputs from diagnostic and summary statistics functions that we us
 
 * Data time frame: While `avgAnnCount` represents the mean for years 2009-2013, the population by county is for 2015 and other variables do not have date stamps. Ideally all variables should have been from the same time period.
 
-* `avgAnnCount`: There is no definition for incidence rate per county for the `avgAnnCount` variable. Since the sum of all values is 1,847,514 and based on cancer.gov data the average number of cases for years 2009-2013 is 1,617,144, we will assume this variable represents the actual count of new cases. Therefore, in our analysis we created a new variable called "..." to represent the incidence rate of cancer per county (number of new cases per 100,000 people).
+* `avgAnnCount`: There is no definition for incidence rate per county for the `avgAnnCount` variable. Since the sum of all values is 1,847,514 and based on Cancer.gov data the average number of cases for years 2009-2013 is 1,617,144, we will assume this variable represents the actual count of new cases. Therefore, in our analysis we created a new variable called "..." to represent the incidence rate of cancer per county (number of new cases per 100,000 people).
 
 ```{r collapse = TRUE, comment=NA}
-#caclulating the total for avgAnnCount to compare with offical reports by cancer.gov
+#caclulating the total for avgAnnCount to compare with offical reports by Cancer.gov
 sum(Cancer$avgAnnCount)
 ```
 
+   Cancer Statistics 2009-2013
+   Source: [Cancer.gov](https://www.cancer.gov/))
+
+|Year | New Cases |  Deaths|
+|-----|-----|-------|
+|2009 |	1,660,290 | 562,340 | 
+|2010 |	1,529,560	| 569,490 |
+|2011 |	1,596,670	| 571,950 |
+2012 | 1,638,910	| 577,190 |
+2013 | 1,660,290  |	580,350 |
+
 
 ```{r collapse = TRUE, comment=NA}
-#calculating the ofr mean cancer death count for years 2009-2013 based on cancer.gov data, in order to cofirm our assumption for the definition of avgAnnCount variable  
+#calculating the ofr mean cancer death count for years 2009-2013 based on Cancer.gov data, in order to cofirm our assumption for the definition of avgAnnCount variable  
 incidence_cancer <- c(1660290, 1529560, 1596670, 1638910, 1660290)
 mean(incidence_cancer)
 
@@ -189,7 +199,7 @@ Cancer$AvgHouseholdSize[Cancer$AvgHouseholdSize < 1] = NA #replacing erroneous v
 * The `PctSomeCol18_24` variable has too many NA values (2285 out 3047). We will need to take this into account during our analysis. 
 
 
-* It is not clear how the birth rate is calculated and what exactly `BirthRate` represents. Often, the birth rate is defined as childbirths per 1,000 people each year, but applying that here would not give us the right number. For example in Los Angeles County with the population of 10,170,292, there were 124,641 live births in 2015, which translates into a birth rate of 12.25 (BR = (b ÷ p) X 1,000). However, the birth rate in our data shows a value of 4.7, which is probably the ratio of women aged 15-50 years old who gave birth in 2015 (source: http://www.towncharts.com/California/Demographics/Los-Angeles-County-CA-Demographics-data.html). As a result we didn't use this variable in our analysis.
+* It is not clear how the birth rate is calculated and what exactly `BirthRate` represents. Often, the birth rate is defined as childbirths per 1,000 people each year, but applying that here would not give us the right number. For example in Los Angeles County with the population of 10,170,292, there were 124,641 live births in 2015, which translates into a birth rate of 12.25 (BR = (b ÷ p) X 1,000). However, the birth rate in our data shows a value of 4.7, which is probably the ratio of women aged 15-50 years old who gave birth in 2015 (source: [TownCharts](http://www.towncharts.com/California/Demographics/Los-Angeles-County-CA-Demographics-data.html)). As a result we didn't use this variable in our analysis.
 
 ```{r collapse = TRUE, comment=NA}
 #checking the BirthRate value for Los Angeles County
@@ -203,7 +213,7 @@ Cancer[1000,'BirthRate']
 ```
 
 
-* Based on our assessment, we believe the `deathRate` should represent the number of deaths due to cancer per 100,000 population per county. We looked at the figure for Kings County, NY (173.6) and the number in our data is closer to cancer death rate (140.3), as opposed to overall death rate (603.1). Based on this assumption, we also calculated the total death in a new column, calling the variable death_count (`deathRate` * `popEst2015`/100000) and total is 525,347, which is close to the figure reported by cancer.gov (589,430), further confirming our assumption regarding `deathRate` is most probably correct.
+* Based on our assessment, we believe the `deathRate` should represent the number of deaths due to cancer per 100,000 population per county. We looked at the figure for Kings County, NY (173.6) and the number in our data is closer to cancer death rate (140.3), as opposed to overall death rate (603.1). Based on this assumption, we also calculated the total death in a new column, calling the variable death_count (`deathRate` * `popEst2015`/100000) and total is 525,347, which is close to the figure reported by [Cancer.gov](https://www.cancer.gov/) (589,430), further confirming our assumption regarding `deathRate` is most probably correct.
 
 
 ```{r collapse = TRUE, comment=NA}
@@ -215,7 +225,7 @@ Cancer[388, 'deathRate']
 2015 population: 2,673,000
 2015 death rate (per 100,000 population): 603.1
 2015 Cancer death rate (per 100,000 population): 140.3
-Sources: DATA USA https://datausa.io/, NY State Dpt of Health https://www.health.ny.gov/
+Sources: [DATA USA](https://datausa.io/), [NY State Dpt of Health](https://www.health.ny.gov/)
 
 ```{r collapse = TRUE, comment=NA}
 #comparing total death count in our dataset with official stats reported by officials
