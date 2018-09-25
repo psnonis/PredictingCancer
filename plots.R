@@ -1,9 +1,3 @@
-# font.add.google('Gloria Hallelujah', 'gloria')
-# showtext.auto(enable = T)
-# family <- 'gloria'
-
-family <- 'sans'
-
 options(warn=-1)
 
 yxScatter <- function(y, x = NA, title = NA)

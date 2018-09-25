@@ -22,7 +22,6 @@ source("outliers.R")
 options(repr.plot.width=5, repr.plot.height=5)
 ```
 
-
 ## Introduction
 
 In this project our efforts are focused on the analysis of data included in the csv file provided, to primarily understand the potential relationship between different parameters and the incidences of cancer across counties in the US. The main objectives are:
@@ -58,10 +57,42 @@ print(paste0('Number of columns: ', ncol(Cancer)))
 
 ```
 
+The **cancer.csv** file contains 29 variables and 3,047 observations. Each observation (i.e. row) includes data for a county across the US. The variables are mostly numbers and integers, except for 2 that are factors (`binnedInc` and `Geography`).
 
-The cancer.csv file contains 29 variables (30 columns, including the first one that only contains the row numbers) and 3,047 observations. Each observation (i.e. row) includes data for a county across the US. The variables are mostly numbers and integers, except for 2 that are factors (`binnedInc` and `Geography`). Below, we explain the variables in detail and provide our assessment of the quality of the data.  
+Taking a first look at the data, we wanted to do some spasial data exploration. Cancer affects a significant population and the effect is felt mostly uniformly across the country.
 
->>> data on smoking and obesity and other cancer risk factors could've been very helpful
+Before we could do this we needed to augment our dataset with additional geocoordinate details. We were able to obtain that data from the website of the Census Beauru at census.gov/geo/maps-data. After some minor data manipulations, we were able to join the two datasets using the **Geography** variable.
+
+```{r}
+source("maps.R")
+map_setup()
+```
+
+This allowed us to visualize and explore the Cancer dataset:
+
+```{r}
+map_us_incidenceRate()
+```
+
+```{r}
+map_us_deathRate()
+```
+
+However, we did find some outliers, espcially in **Kentucky** and **West Virgiana** that is seeing a dispropotional effect, compared to other states such as California.
+
+```{r}
+map_wv_ky_deathRate()
+```
+
+```{r}
+map_ca_deathRate()
+```
+
+We also discovered that the Cancer dataset was missing data from 93 counties belonging to the continental United States. These counties appear as blank polygons in our maps.
+
+Below, we explain the variables in detail and provide our assessment of the quality of the data.
+
+>data on smoking and obesity and other cancer risk factors could've been very helpful
 
 #### Variables
 

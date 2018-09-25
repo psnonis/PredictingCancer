@@ -13,13 +13,14 @@ import('corrplot')
 import('psych')
 import('visNetwork')
 import('reshape2')
-import('showtext')
 import('mapproj')
 import('ggpubr')
 import('RColorBrewer')
 import('car')
 
-#library(dplyr)
-#library(tidyr)
-#library(fBasics)
-#library(xtable)
+# import('showtext')
+# font.add.google('Gloria Hallelujah', 'gloria')
+# showtext.auto(enable = T)
+# family <- 'gloria'
+
+family <- 'sans'
