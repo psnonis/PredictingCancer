@@ -11,6 +11,7 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(fig.width=12, fig.height=8)
 ```
 
 ##  Setup
@@ -663,19 +664,29 @@ nodes.outcomeVariables <- nodes[nodes$id %in% unique(c(as.vector(links.incidence
 Network diagram showing strong correlations to deathRate.
 
 ```{r}
-visNetwork(nodes.deathRate, links.deathRate)
+visNetwork(nodes.deathRate, links.deathRate, height = '500px', width = '100%',
+           background = '#F8F2E5',
+           main = 'Cancer Death Rate Correlations') %>%
+    visOptions(highlightNearest = T, nodesIdSelection = T) %>%
+    visPhysics(forceAtlas2Based = list(gravitationalConstant = -500))
 ```
 
 Network diagram showing strong correlations to incidenceRate.
 
 ```{r}
-visNetwork(nodes.incidenceRate, links.incidenceRate)
+visNetwork(nodes.incidenceRate, links.incidenceRate, height = '500px', width = '100%',
+           background = '#F8F2E5',
+           main = 'Cancer Incedence Rate Correlations') %>%
+    visOptions(highlightNearest = T, nodesIdSelection = T)
 ```
 
 Network diagram showing strong correlations to both outcome variables.
 
 ```{r}
-visNetwork(nodes.outcomeVariables, links.outcomeVariables)
+visNetwork(nodes.outcomeVariables, links.outcomeVariables, height = '500px', width = '100%',
+           background = '#F8F2E5',
+           main = 'Cancer Correlations') %>%
+    visOptions(highlightNearest = T, nodesIdSelection = T)
 ```
 
 The preceeding visual analysis helped us to pick the strongest candidates to do further data exploration.
@@ -725,8 +736,10 @@ yxScatter(Cancer$PctBachDeg25_Over, Cancer$deathRate, "Bachelor's Degree (>24)")
 Throughout the analyses above, we began to identify that some of the relationships found between `deathRate` and other variables may not only be capturing the direct relationship betwee these variables but of additional variable(s) that may be impacting both. To further assess this systematically, the following network visualization shows the variables that have a correlation higher than 0.4, where each node represents a different variable and each vertex indicates the strength of the relationship between the variables connected.
 
 ```{r}
-
-visNetwork(nodes,links)
+visNetwork(nodes, links, height = '500px', width = '100%',
+           background = '#F8F2E5',
+           title = 'Secondary Effects') %>%
+    visOptions(highlightNearest = T, nodesIdSelection = T)
 
 ```
 
@@ -777,6 +790,6 @@ yxScatter(Cancer$PctUnemployed16_Over, Cancer$PctBlack, "Percent Unemployed vs B
 A boxplot containing different location measures of `deathRate` by `State` shows that these values vary measures vary significantly across state. Since `State` may be capturing several state-level characteristics that may in turn affect other variables that have a relation with `deathRate`, it is recommended to include state-level effects when modeling the relation of interest, to control for confounding these state-level factors.
 
 ```{r}
-boxplot(Cancer$deathRate ~ Cancer$State)
+yxBox(Cancer$deathRate,Cancer$State)
 ```
 

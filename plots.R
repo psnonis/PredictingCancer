@@ -1,5 +1,24 @@
 options(warn=-1)
 
+yxBox <- function(y, x, title = NA)
+{
+    t <- 'Death Rate by State'
+    p <- wsj_pal(palette = 'colors6')(6)
+
+    b <- qplot(x = x, y = y) +
+        geom_boxplot(fill = p[4]) +
+        theme_wsj() +
+        scale_color_wsj() +
+        theme(legend.position = 'none',
+              text = element_text(size = 16, family = family),
+              title = element_text(size = 24, family = family),
+              plot.title = element_text(hjust = 0.5),
+              axis.text.y = element_blank()) +
+        ggtitle(t)
+
+    b
+}
+
 yxScatter <- function(y, x = NA, title = NA)
 {
     if(is.na(title))

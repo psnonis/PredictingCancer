@@ -1,9 +1,35 @@
-import <- function(package)
+import <- function(package, devtools = F, version = NA)
 {
-  print(paste( 'Importing Package :', package))
-  if (!require(package, character.only = T))
-    install.packages(package, dep = T)
-  library(package, character.only = T)
+    if(devtools == T)
+    {
+        uri <- package
+        package <- tail(strsplit(package, '/')[[1]], 1)
+
+        if(!require(package, character.only = T))
+        {
+            print(paste( 'Installing Package : GHUB :', uri))
+            devtools::install_github(uri)
+        }
+        else
+        {
+            if(packageVersion(package) < version)
+            {
+                print(paste( ' Upgrading Package : GHUB :', uri))
+                devtools::install_github(uri)
+            }
+        }
+    }
+    else
+    {
+        if(!require(package, character.only = T))
+        {
+            print(paste( 'Installing Package : CRAN :', package))
+
+            install.packages(package, dep = T)
+        }
+    }
+
+    library(package, character.only = T)
 }
 
 import('tidyverse')
@@ -17,6 +43,8 @@ import('mapproj')
 import('ggpubr')
 import('RColorBrewer')
 import('car')
+import('devtools')
+import('datastorm-open/visNetwork', devtools = T, version = '2.0.5')
 
 # import('showtext')
 # font.add.google('Gloria Hallelujah', 'gloria')
