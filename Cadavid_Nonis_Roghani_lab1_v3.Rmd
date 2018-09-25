@@ -52,14 +52,14 @@ Taking a first look at the data, we wanted to do some spasial data exploration. 
 
 Before we could do this we needed to augment our dataset with additional geocoordinate details. We were able to obtain that data from the website of the Census Beauru at census.gov/geo/maps-data. After some minor data manipulations, we were able to join the two datasets using the **Geography** variable.
 
-```{r}
+```{r echo=FALSE}
 source("maps.R")
 map_setup()
 ```
 
 This allowed us to visualize and explore the Cancer dataset:
 
-```{r map1, out.width = '60%', fig.align = 'center'}
+```{r map1, out.width = '55%', fig.align = 'center'}
 map_us_incidenceRate()
 ```
 
@@ -355,7 +355,8 @@ Finally, using both summary metrics and visualizations, we did not find any unus
 ```{r}
 summary(Cancer$deathRate)
 ```
-```{r}
+
+```{r out.width = '60%', fig.align = 'center'}
 boxHist(Cancer$deathRate, "The Cancer Death Rate", "Nummber of Deaths per 100K People")
 ``` 
 
@@ -411,7 +412,7 @@ The distribution of the incidence rate is unimodal and positively skewed, with 4
 summary(Cancer$incidenceRate)
 ```
 
-```{r}
+```{r out.width = '60%', fig.align = 'center'}
 boxHist(Cancer$incidenceRate, "Cancer Incidence Rate", "New Diagnosed Cases per 100K People")
 ```
 
@@ -437,7 +438,7 @@ summary(Cancer$medIncome)
 sum(Cancer$medIncome > 80000)
 ```
 
-```{r}
+```{r out.width = '60%', fig.align = 'center'}
 boxHist(Cancer$medIncome, "The Median Income")
 ```
 
@@ -485,7 +486,7 @@ summary(Cancer$PctHS25_Over)
 ```
 
 
-```{r}
+```{r out.width = '60%', fig.align = 'center'}
 boxHist(Cancer$PctHS25_Over, "Percentage age 25 or older with high school only")
 ```
 
@@ -504,7 +505,7 @@ summary(Cancer$PctBachDeg25_Over)
 ```
 
 
-```{r}
+```{r out.width = '60%', fig.align = 'center'}
 boxHist(Cancer$PctBachDeg25_Over, "Percentage age 25 or older with bachelors degree only")
 ```
 
@@ -526,7 +527,7 @@ However, when modeling the relationship of interest, we should take into account
 summary(Cancer$povertyPercent)
 ```
 
-```{r}
+```{r out.width = '60%', fig.align = 'center'}
 boxHist(Cancer$povertyPercent, "Percentage age 25 or older with up to bachelors degree")
 ```
 
@@ -545,7 +546,7 @@ The distribution of `PctEmployed16_Over` is unimodal and negatively skewed. This
 summary(Cancer$PctEmployed16_Over)
 ```
 
-```{r}
+```{r out.width = '60%', fig.align = 'center'}
 boxHist(Cancer$PctEmployed16_Over, "Percentage age 25 or older with up to bachelors degree")
 ```
 
@@ -563,7 +564,7 @@ The distribution of `PctPublicCoverage` is unimodal and symmetric, with no extre
 summary(Cancer$PctPublicCoverage)
 ```
 
-```{r}
+```{r out.width = '60%', fig.align = 'center'}
 boxHist(Cancer$PctPublicCoverage, "Percentage age 25 or older with up to bachelors degree")
 ```
 
@@ -586,7 +587,7 @@ We choose all the original numerical variables for this purpose using. We chose 
 
 Using a matrix correlation plot and using a ordering algorithm to cluster correlated variables together allows us easily find strong $\color{blue}{\text{POSITIVELY}}$ and $\color{red}{\text{NEGATIVELY}}$ correlated variables.
 
-```{r}
+```{r out.width = '60%', fig.align = 'center'}
 corrplot(Cancer.Correlation, method = 'circle', type = 'lower',  order = 'FPC', diag = F)
 ```
 
@@ -595,7 +596,7 @@ corrplot(Cancer.Correlation, method = 'circle', type = 'lower',  order = 'FPC', 
 A network diagram allows us to connect the variables (nodes) to each other based on their respective correlation (links).
 For this we needed to first respahe the Correlation Matrix we generated in the previous step into a flat list of variable combinations along with their respective correlations.
 
-```{r}
+```{r out.width = '60%', fig.align = 'center'}
 links <- subset(melt(Cancer.Correlation), value != 1.0 & abs(value) > 0.4)
 links <- links[!duplicated(t(apply(links, 1, sort))),]
 ```
@@ -653,7 +654,7 @@ nodes.outcomeVariables <- nodes[nodes$id %in% unique(c(as.vector(links.incidence
 
 Network diagram showing strong correlations to deathRate.
 
-```{r}
+```{r out.width = '60%', fig.align = 'center'}
 visNetwork(nodes.deathRate, links.deathRate, height = '500px', width = '100%',
            background = '#F8F2E5',
            main = 'Cancer Death Rate Correlations') %>%
@@ -663,7 +664,7 @@ visNetwork(nodes.deathRate, links.deathRate, height = '500px', width = '100%',
 
 Network diagram showing strong correlations to incidenceRate.
 
-```{r}
+```{r out.width = '60%', fig.align = 'center'}
 visNetwork(nodes.incidenceRate, links.incidenceRate, height = '500px', width = '100%',
            background = '#F8F2E5',
            main = 'Cancer Incedence Rate Correlations') %>%
@@ -672,7 +673,7 @@ visNetwork(nodes.incidenceRate, links.incidenceRate, height = '500px', width = '
 
 Network diagram showing strong correlations to both outcome variables.
 
-```{r}
+```{r out.width = '60%', fig.align = 'center'}
 visNetwork(nodes.outcomeVariables, links.outcomeVariables, height = '500px', width = '100%',
            background = '#F8F2E5',
            main = 'Cancer Correlations') %>%
@@ -695,7 +696,7 @@ This is an intuitive result since it indicates that a higher concentration of pe
 cor(Cancer$deathRate, Cancer$PctHS25_Over)
 ```
 
-```{r}
+```{r out.width = '60%', fig.align = 'center'}
 yxScatter(Cancer$deathRate, Cancer$PctHS25_Over, "HS Education (>24)")
 ```
 
@@ -707,11 +708,11 @@ A correlation of $-0.48$ indicates that there is relationship between `PctBachDe
 
 This is also an intuitive result, since higher levels of education might be linked to better health habits and access to health services. However, and following the same reasoning than `PctHS25_over`, the relationship between these two variables may be confounded by `MedianAge`, although it is not clear in which direction this effect might go. Therefore, it will also be necessary to explore the effect of `MedianAge` in the following section.
 
-```{r}
+```{r out.width = '60%', fig.align = 'center'}
 cor(Cancer$deathRate, Cancer$PctBachDeg25_Over)
 ```
 
-```{r}
+```{r out.width = '60%', fig.align = 'center'}
 yxScatter(Cancer$PctBachDeg25_Over, Cancer$deathRate, "Bachelor's Degree (>24)")
 ```
 
@@ -728,7 +729,7 @@ The U.S. government's threshold for poverty in 2015 was $\$24,250$ for a family 
 cor(Cancer$deathRate, Cancer$povertyPercent)
 ```
 
-```{r}
+```{r out.width = '60%', fig.align = 'center'}
 yxScatter(Cancer$deathRate, Cancer$povertyPercent, "Poverty Percentage vs Death Rate")
 ```
 
@@ -742,7 +743,7 @@ The percentage of all individuals over `16` years within the county has a signif
 cor(Cancer$deathRate, Cancer$PctEmployed16_Over, use = 'complete.obs')
 ```
 
-```{r}
+```{r out.width = '60%', fig.align = 'center'}
 yxScatter(Cancer$deathRate, Cancer$povertyPercent, "Unemployment Percentage (>15) vs Death Rate")
 ```
 
@@ -772,14 +773,14 @@ cor(subset(Cancer,
 
 Both the scatterplots below and the regression lines imposed on them provide further support that there is indeed a relationship between these two variabes and `MedianAge`, indicating that `MedianAge` may confound the relationship between these two and `deathRate`. Therefore, this should be taken into account when modelling the relation of interest, in order to isolate the effect of the family variables on the death rate.
 
-```{r}
+```{r out.width = '60%', fig.align = 'center'}
 #plot(Cancer$MedianAge, Cancer$PercentMarried, main = "Age vs PercentMarried")
 #abline(lm(PercentMarried ~ MedianAge, data = Cancer), lty = 'dashed', lwd = 2, col = 'red')
 yxScatter(Cancer$PercentMarried, Cancer$MedianAge, "Age vs PercentMarried")
 
 ```
 
-```{r}
+```{r out.width = '60%', fig.align = 'center'}
 #plot(Cancer$MedianAge, Cancer$AvgHouseholdSize, main = "Age vs Average household size")
 #abline(lm(AvgHouseholdSize ~ MedianAge, data = Cancer), lty = 'dashed', lwd = 2, col = 'red')
 yxScatter(Cancer$AvgHouseholdSize, Cancer$MedianAge, "Age vs Household Size")
@@ -795,7 +796,7 @@ cor(subset(Cancer, select = c("PctBlack", "PctUnemployed16_Over")),
     use = "pairwise.complete.obs")[, 1]
 ```
 
-```{r}
+```{r out.width = '60%', fig.align = 'center'}
 #plot(Cancer$PctBlack, Cancer$PctUnemployed16_Over, main = "Age vs PercentMarried")
 #abline(lm(PctUnemployed16_Over ~ PctBlack, data = Cancer), lty = 'dashed', lwd = 2, col = 'red')
 yxScatter(Cancer$PctUnemployed16_Over, Cancer$PctBlack, "Percent Unemployed vs Black")
