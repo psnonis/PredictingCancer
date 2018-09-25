@@ -59,21 +59,21 @@ map_setup()
 
 This allowed us to visualize and explore the Cancer dataset:
 
-```{r}
+```{r map1, out.width = '60%', fig.align = 'center'}
 map_us_incidenceRate()
 ```
 
-```{r}
+```{r map2, out.width = '60%', fig.align = 'center'}
 map_us_deathRate()
 ```
 
 However, we did find some outliers, espcially in **Kentucky** and **West Virgiana** that is seeing a dispropotional effect, compared to other states such as California.
 
-```{r}
+```{r map3, out.width = '60%', fig.align = 'center'}
 map_wv_ky_deathRate()
 ```
 
-```{r}
+```{r map4, out.width = '40%', fig.align = 'center'}
 map_ca_deathRate()
 ```
 
@@ -83,7 +83,7 @@ Below, we explain the variables in detail and provide our assessment of the qual
 
 >data on smoking and obesity and other cancer risk factors could've been very helpful
 
-## Variables
+## Overview of Variables
 
 * Cancer data:
     + `avgAnnCount`: The average number of new cancer cases per year per county for years 2009-2013
@@ -137,11 +137,9 @@ Below, we explain the variables in detail and provide our assessment of the qual
     + `deathRate`: Death rate per county       
 
 
-### Evaluation of Dataset and Variables
+## Evaluation of Dataset and Variables
 
 Based on the outputs from diagnostic and summary statistics functions, as well as further univariate analysis, using relevant charts, below we describe our evaluation of the dataset and its variables. Since definition of most variables was not provided to us, our first step was to ensure understanding of what exactly such variables represent. We also evaluated the data to identify potentially erroneous values, extreme outliers and variables that might require transformation.
-
->>>from the assignment document: Evaluate the data quality. Are there any issues with the data? Explain how you handled these potential issues. Explain whether any data processing or preparation is required for your data set.
 
 * **Data time frame:**: While `avgAnnCount` represents statistics for 2009-2013, the population by county is for 2015 and other variables do not have date stamps. Ideally all variables should have been from the same time period.
 
@@ -252,7 +250,7 @@ Cancer[388, 'deathRate']
         2015 population: 2,673,000
         2015 death rate (per 100,000 population): 603.1
         2015 Cancer death rate (per 100,000 population): 140.3
->>> Sources: [DATA USA](https://datausa.io/), [NY State Dpt of Health](https://www.health.ny.gov/)
+    Sources: [DATA USA](https://datausa.io/), [NY State Dpt of Health](https://www.health.ny.gov/)
 
 ```{r collapse = TRUE, comment=NA}
 #comparing total death count in our dataset with official stats reported by health authorities
@@ -275,7 +273,7 @@ print('Pct_PersonalIsure')
 summary(Pct_PersonalIsure)
 ```
 
-### Data Transformations
+## Data Transformations
 
 Based on the data evaluation mentiond before and additional analysis, we are transforming some of the valuables that have issues, as explained below. 
 
@@ -311,7 +309,7 @@ The Average Household Size for several observation were below 1, i.e. more house
 Cancer$AvgHouseholdSize[Cancer$AvgHouseholdSize<1] <- Cancer$AvgHouseholdSize[Cancer$AvgHouseholdSize<1] * 100 # correct average household sizes below 1 which were divided by 100
 ```
 
-### Average Annual Count
+### Average Annual Count Corrections
 
 The Average Annual Count variable which designate the number of new cancer cases within the county contained a significant number of values that seems to be some data inputing error, they were all 1962.667684. This value is too large to be resonably considered a valid incidence rate. These datapoints were from only 3 states. So we explored several approaches to correct these values.
 
@@ -332,7 +330,7 @@ Cancer$avgAnnCount[Cancer$avgAnnCount==1962.667684] <- incidenceMean * Cancer$po
 Cancer$incidenceRate <- Cancer$avgAnnCount / Cancer$popEst2015 * 100000 # new cancer cases per 100,000 persons per year
 ```
 
-### Choice 2 - Final Choice
+#### Choice 2 - Final Choice
 ```{r}
 Cancer$avgAnnCount[Cancer$avgAnnCount==1962.667684] <- NA # remove just the anomalous values
 Cancer$incidenceRate <- Cancer$avgAnnCount / Cancer$popEst2015 * 100000 # new cancer cases per 100,000 persons per year
@@ -452,7 +450,7 @@ outliers.summ(Cancer, "medIncome")
 Given the rather large number of outliers in this variable, we could transform it by taking its logarithm. However, we have decided to follow the rule provided by Fox (2011), where logarithmic transformation is only likely to make a difference if its values "cover two or more orders of magnitude" (Fox, p. 128).
 
 
-### Education
+## Education
 
 To measure education, we have six possible candidates: 'PctNoHS18_24', 'PctHS18_24', 'PctSomeCol18_24', 'PctBachDeg18_24', 'PctHS25_Over' and 'PctBachDeg25_Over' that can be divided in two groups: 18-24 and '25 and above' years old. Our initial hypothesis is that the second group should have a stronger correlation with death rate. We validated this hypothesis with the correlations table shown below, that found that only PctBachDeg from the 18-24 group has a correlation with deathRate (although this correlation is very week, -0.31). Instead, as expected, the two'25 and above' education variables have a much higher correlation with deathRate.
 
@@ -478,7 +476,7 @@ sum.pct.freq
 ```
 
 
-#### PctHS25_over
+### PctHS25_over
 
 Values in `PctHS25` are within a reasonable range (7 to 55%) and there doesn't seem to be an unusual concentration of observations around certain values. Also, the disribution of this variable is unimodal and negatively skewed. However, it only contains 31 outliers (1% of observations) and there are no extreme outliers. Furthermore, there are no indications that these outliers are errors, so we decided to keep them.
 
@@ -497,7 +495,7 @@ outliers.summ(Cancer, "PctHS25_Over")
 ```
 
 
-#### PctBachDeg25_Over
+### PctBachDeg25_Over
 
 Values in `PctHS25_Over` are within a reasonable range (7% to 55%) and there doesn't seem to be an unusual concentration of observations around certain values. The disribution of this variable is unimodal and positively skewed. It contains 82 outliers (2.7% of observations) all of which at are at the right side of the mean. Of these 82 outliers, only 5 are extreme outliers, that will be kept in the data set, since there are no indications that they are errors.
 
@@ -518,7 +516,7 @@ outliers.summ(Cancer, "PctBachDeg25_Over")
 
 
 
-### Poverty Percentage
+## Poverty Percentage
 
 The distribution of `povertyPercent` is unimodal and positively skewed. This is reflected by the fact that all outliers are at the right of the mean. Taking a deeper dive into the outliers, we found that only 3 are extreme while 66 are mild. For this reason, and because we did not find other indication that the outliers or other values were errors, we will keep all data from this variable.
 
@@ -538,7 +536,7 @@ outliers.summ(Cancer, "povertyPercent")
 ```
 
 
-### Percentage employed (16 or over)
+## Percentage Employed (16 or over)
 
 The distribution of `PctEmployed16_Over` is unimodal and negatively skewed. This is reflected by the fact that all but one of the outliers are at the left of the mean. There are no extreme outliers and 20 mild outliers (0.7% of observations). For this reason, and because we did not find other indication that the outliers or other values were errors, we will keep all data from this variable.
 
