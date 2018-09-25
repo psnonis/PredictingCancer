@@ -632,7 +632,7 @@ Next we had to create a list of all nodes--Variables--that we want to see in the
 nodes <- data.frame('id' = names(Cancer.Numerical))
 ```
 
-Stylize the nodes, highlighting $\color{navy}{\text{deathRate}}$ in navy and $\color{purple}{\text{incidenceRate}}$ in purple.
+Stylize the nodes, highlighting $deathRate$ in navy and $incidenceRate$ in purple.
 
 ```{r}
 nodes$label                      <- nodes$id
