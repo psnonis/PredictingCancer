@@ -244,7 +244,7 @@ Cancer <- Cancer %>% separate(Geography, c("County", "State"), sep = ", ", remov
 #replacing erroneous values with NA
 Cancer$MedianAge[Cancer$MedianAge > 100] <- NA
 Cancer$AvgHouseholdSize[Cancer$AvgHouseholdSize < 1] <- NA
-#Ramiro to add comment
+# Define new binned income with equal sized bins
 bins <- seq(20000, 130000, by = 10000)
 Cancer$binnedInc2 <- cut(Cancer$medIncome, breaks = bins)
 # Cancer$avgAnnCount[Cancer$avgAnnCount == 1962.667684] <- NA
@@ -253,8 +253,6 @@ Cancer$binnedInc2 <- cut(Cancer$medIncome, breaks = bins)
 Cancer$death_count <- Cancer$deathRate * Cancer$popEst2015/100000
 #creating a new variable to represent the percentage of population with health insurance
 Cancer$Pct_insured <- Cancer$PctPrivateCoverage + Cancer$PctPublicCoverage
-#Ramiro to add note
-Cancer$Pct_PersonalIsure <- Cancer$PctPrivateCoverage + Cancer$PctEmpPrivCoverage
 ```
 
 
