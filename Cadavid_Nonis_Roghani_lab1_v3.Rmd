@@ -695,7 +695,7 @@ The preceeding visual analysis helped us to pick the strongest candidates to do 
 
 As explained above, guided by our hypothesis that the education of the '25 and over' years old group should have a much stronger relationship with deathRate than the '18-24' years old group, which was supported by the correlations between these variables, we will be focusing on the former group.
 
-#### PctHS25_over
+#### Percentage of Adults with Only a High School Education [PctHS25_over]
 
 A correlation of $0.4$ between `PctHS25_over` and `deathRate` indicates that there is indeed a relationship between these variables, which is further indicated by plotting them together in a scatterplot, that shows that higher values of percentage of population with only high school tend to be associated to higher death rates (this is also reflected in the regression line added to the scatterplot).
 
@@ -706,14 +706,12 @@ cor(Cancer$deathRate, Cancer$PctHS25_Over)
 ```
 
 ```{r}
-#plot(Cancer$PctHS25_Over, Cancer$deathRate, main = "HS (>24)")
-#abline(lm(Cancer$deathRate ~ Cancer$PctHS25_Over), lty = 'dashed', lwd = 2, col = 'red')
 yxScatter(Cancer$deathRate, Cancer$PctHS25_Over, "HS Education (>24)")
 ```
 
 
 
-#### PctBachDeg25_0ver
+#### Percentage of Adults with atleast a Bachelors Degree [PctBachDeg25_0ver]
 
 A correlation of $-0.48$ indicates that there is relationship between `PctBachDeg25_over` and `deathRate`, which is further supported by plotting these variables in a scatterplot, where it can be seen that higher values of percentage of people with bachelors degree are associated to lower levels of death rates. This relationship is  also supported by the regression line included in the scatterplot.
 
@@ -724,9 +722,39 @@ cor(Cancer$deathRate, Cancer$PctBachDeg25_Over)
 ```
 
 ```{r}
-#plot(Cancer$PctBachDeg25_Over, Cancer$deathRate, main = "Bachelor (>24)")
-#abline(lm(Cancer$deathRate ~ Cancer$PctBachDeg25_Over), lty = 'dashed', lwd = 2, col = 'red')
 yxScatter(Cancer$PctBachDeg25_Over, Cancer$deathRate, "Bachelor's Degree (>24)")
+```
+
+
+
+### Employment and Poverty
+
+<TODO>
+
+#### Percentage of Population in Poverty [povertyPercent]
+
+The U.S. government's threshold for poverty in 2015 was $\$24,250$ for a family of four. There is a significant $0.42$ correlation between poverty percentage and Cancer death rates.
+
+```{r collapse=TRUE}
+cor(Cancer$deathRate, Cancer$povertyPercent)
+```
+
+```{r}
+yxScatter(Cancer$deathRate, Cancer$povertyPercent, "Poverty Percentage vs Death Rate")
+```
+
+
+
+#### Young Adult and Adult Unemployment Percentage [PctEmployed16_Over]
+
+The percentage of all individuals over `16` years within the county has a significant $-0.41$ correlation to Cancer death rates. It shows that being employed is a strong correlator to surviving Cancer.
+
+```{r collapse=TRUE}
+cor(Cancer$deathRate, Cancer$PctEmployed16_Over, use = 'complete.obs')
+```
+
+```{r}
+yxScatter(Cancer$deathRate, Cancer$povertyPercent, "Unemployment Percentage (>15) vs Death Rate")
 ```
 
 
@@ -769,7 +797,7 @@ yxScatter(Cancer$AvgHouseholdSize, Cancer$MedianAge, "Age vs Household Size")
 ```
 
 
-### Black population and employment
+### Black Population and Employment
 
 Correlation analysis shows that there is a relationship between the percentage of black population and employment, which is further confirmed both by a visual inspection of the scatterplot and the linear regression line charted in this plot. Since employment es related to `deathRate`, its correlation with `PctBlack` may indicate that this variable may be confounding the relationship of interest and thus further modeling needs to take this into account, to isolate the effect of unemployment on death rate.
 
@@ -785,7 +813,7 @@ yxScatter(Cancer$PctUnemployed16_Over, Cancer$PctBlack, "Percent Unemployed vs B
 ```
 
 
-### State
+### Death Rates by State
 
 A boxplot containing different location measures of `deathRate` by `State` shows that these values vary measures vary significantly across state. Since `State` may be capturing several state-level characteristics that may in turn affect other variables that have a relation with `deathRate`, it is recommended to include state-level effects when modeling the relation of interest, to control for confounding these state-level factors.
 

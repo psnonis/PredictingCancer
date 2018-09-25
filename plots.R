@@ -101,6 +101,7 @@ boxHist <- function(v, title = NA, subtitle = NA)
 
     h <- qplot(x = v, geom = 'histogram', bins = vBins) +
         geom_histogram(fill= p[4], bins = vBins) +
+       #geom_density(aes(y = 2500 * ..count..), fill = p[2], alpha = 0.1) +
         geom_vline(aes(xintercept = vMean),   size = 1, color = p[1], linetype = 'dashed') +
         geom_vline(aes(xintercept = vMedian), size = 1, color = p[1], linetype = 'solid') +
         theme_wsj() +
@@ -110,59 +111,4 @@ boxHist <- function(v, title = NA, subtitle = NA)
               plot.title = element_blank())
 
     ggarrange(b, h, heights = c(2,3), align = 'hv', ncol = 1, nrow = 2)
-
-    #xFit <- seq(vMin, vMax, length.out = 100)
-    #yFit <- dnorm(xFit, mean = vMean, sd = vSD)
-    #yFit <- yFit * diff(h$mids[1:2]) * vLen
-
-    #x <- lines(xFit, yFit, col = '#5E4FA2C0', lwd = 3)
-    #x <- abline(v = vMean, col = '#3288BDC0', lwd = 3, lty = 1)
-    #x <- abline(v = vMedian, col = '#3288BDC0', lwd = 3, lty = 2)
-}
-
-boxHist_ <- function(v, title = NA)
-{
-    if(is.na(title))
-    {
-        t <- tail(strsplit(deparse(substitute(y)), '\\$')[[1]], 1)
-    }
-
-    vLen    <- length(v)
-    vMin    <- min(v, na.rm = T)
-    vMax    <- max(v, na.rm = T)
-    vBreaks <- seq(vMin, vMax, length.out = 10)
-    vMean   <- mean(v, na.rm = T)
-    vMedian <- median(v, na.rm = T)
-    vSD     <- sd(v)
-
-    layout(mat = matrix(c(1, 2), 2, 1, byrow = T), heights = c(2, 8))
-
-    par(mar = c(0, 3, 3, 1), bg = 'blanchedalmond')
-
-    b <- boxplot(v, main = t,
-                 horizontal = T,
-                 xaxt = 'n',
-                 col ='#5E4FA2',
-                 frame = F)
-
-    par(mar = c(5, 3, 0, 1))
-
-    d <- hist(v, breaks = vBreaks, plot = F)
-    h <- hist(v, breaks = vBreaks,
-              col = c('#9E0142','#D53E4F','#F46D43','#FDAE61','#FEE08B','#FFFFBF','#E6F598','#ABDDA4','#66C2A5'),
-              border = NA,
-              main = NA,
-              xlab = sprintf('Mean is %6.3f, Median is %6.3f', vMean, vMedian),
-              ylab = NA,
-              ylim = c(0, max(d$counts) * 1.1),
-              labels = T,
-              font.lab = 2)
-
-    xFit <- seq(vMin, vMax, length.out = 100)
-    yFit <- dnorm(xFit, mean = vMean, sd = vSD)
-    yFit <- yFit * diff(h$mids[1:2]) * vLen
-
-    x <- lines(xFit, yFit, col = '#5E4FA2C0', lwd = 3)
-    x <- abline(v = vMean, col = '#3288BDC0', lwd = 3, lty = 1)
-    x <- abline(v = vMedian, col = '#3288BDC0', lwd = 3, lty = 2)
 }
