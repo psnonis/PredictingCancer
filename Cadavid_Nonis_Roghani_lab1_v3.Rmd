@@ -790,6 +790,6 @@ yxScatter(Cancer$PctUnemployed16_Over, Cancer$PctBlack, "Percent Unemployed vs B
 A boxplot containing different location measures of `deathRate` by `State` shows that these values vary measures vary significantly across state. Since `State` may be capturing several state-level characteristics that may in turn affect other variables that have a relation with `deathRate`, it is recommended to include state-level effects when modeling the relation of interest, to control for confounding these state-level factors.
 
 ```{r}
-yxBox(Cancer$deathRate,Cancer$State)
+yxBox(Cancer$deathRate, Cancer$State, 'Cancer Death Rate by State')
 ```
 

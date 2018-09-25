@@ -2,7 +2,7 @@ options(warn=-1)
 
 yxBox <- function(y, x, title = NA)
 {
-    t <- 'Death Rate by State'
+    t <- title
     p <- wsj_pal(palette = 'colors6')(6)
 
     b <- qplot(x = x, y = y) +
@@ -13,7 +13,7 @@ yxBox <- function(y, x, title = NA)
               text = element_text(size = 16, family = family),
               title = element_text(size = 24, family = family),
               plot.title = element_text(hjust = 0.5),
-              axis.text.y = element_blank()) +
+              axis.text.x = element_text(angle = 90, hjust = 1)) +
         ggtitle(t)
 
     b

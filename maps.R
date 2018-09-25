@@ -18,7 +18,7 @@ map_setup <- function()
     CanMap.incidenceLimits <<- c(min(CanFoo$incidenceRate),
                                  max(CanFoo$incidenceRate))
 
-    print('Loaded Cancer Map')
+    print('Loaded Cancer Map Data')
 }
 
 map_ca_deathRate <- function()
