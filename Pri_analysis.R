@@ -1,5 +1,3 @@
-setwd('.')
-
 source('install.R')
 
 source('load.R')
@@ -13,10 +11,12 @@ map2()
 map3()
 
 # Univariate Analysis
+yxScatter(Cancer$deathRate, Cancer$PctHS25_Over, 'HS Education')
+showtext.auto(enable = T)
 
 source('plots.R')
 
-showtext.auto(enable = T)
+boxHist(Cancer$medIncome)
 
 yxScatter(Cancer$avgAnnCount)
 yxScatter(Cancer$MedianAge)

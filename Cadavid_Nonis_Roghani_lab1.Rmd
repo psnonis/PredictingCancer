@@ -1,10 +1,12 @@
 ---
-title: "An Exploratory Analysis of Cancer Incidence and Mortality to Identify High-Risk Communities and Improve Survival"
-===
+title: An Exploratory Analysis of Cancer Incidence and Mortality to Identify High-Risk
+  Communities and Improve Survival
 author: "Ramiro Cadavid, Pri Nonis, Payman Roghani"
 date: "September 24, 2018"
-output: pdf_document
-
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -14,13 +16,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ##  Setup
 
 ```{r include=FALSE}
-library(dplyr)
-library(tidyr)
-library(repr)
-library(car)
-library(fBasics)
-library(xtable)
-source("box_hist.R")
+source("install.R")
+source("plots.R")
 source("outliers.R")
 options(repr.plot.width=5, repr.plot.height=5)
 ```
@@ -39,13 +36,17 @@ In this project our efforts are focused on the analysis of data included in the 
 Cancer <- read.csv('cancer.csv', row.names = 1)
 ```
 
+```{r}
+source('load.R')
+```
+
 ```{r fig.height=6, fig.width=6, collapse=TRUE, comment=NA, paged.print=TRUE}
-summary(Cancer) #summary statistics
+#summary(Cancer) #summary statistics
 ```
 ---
 
 ```{r collapse = TRUE, comment=NA}
-str(Cancer, max.level = 1, strict.width = "wrap")
+#str(Cancer, max.level = 1, strict.width = "wrap")
 ```
 ---
 
@@ -297,7 +298,7 @@ Finally, using both summary metrics and visualizations, we did not find any unus
 summary(Cancer$deathRate)
 ```
 ```{r}
-boxHist(Cancer$deathRate, "Death rate (nummber of deaths per 100k people)")
+boxHist(Cancer$deathRate, "The Cancer Death Rate", "Nummber of Deaths per 100K People")
 ``` 
 
 ```{r}
@@ -352,7 +353,7 @@ summary(Cancer$incidenceRate)
 ```
 
 ```{r}
-boxHist(Cancer$incidenceRate, "Incidence rate (new diagnosed cases per 100k people)")
+boxHist(Cancer$incidenceRate, "Cancer Incidence Rate", "New Diagnosed Cases per 100K People")
 ```
 
 ```{r}
@@ -378,7 +379,7 @@ sum(Cancer$medIncome > 80000)
 ```
 
 ```{r}
-boxHist(Cancer$medIncome, "Median income")
+boxHist(Cancer$medIncome, "The Median Income")
 ```
 
 Including the 64 observations above that contribute to the positive skewness of this variable, there are still 122 outliers (around 4% of the total observations) that need to be taken into account when building the statistical model that captures the relationship between this variable and the death rate.
@@ -531,8 +532,9 @@ cor(Cancer$deathRate, Cancer$PctHS25_Over)
 ```
 
 ```{r}
-plot(Cancer$PctHS25_Over, Cancer$deathRate, main = "HS (>24)")
-abline(lm(Cancer$deathRate ~ Cancer$PctHS25_Over), lty = 'dashed', lwd = 2, col = 'red')
+#plot(Cancer$PctHS25_Over, Cancer$deathRate, main = "HS (>24)")
+#abline(lm(Cancer$deathRate ~ Cancer$PctHS25_Over), lty = 'dashed', lwd = 2, col = 'red')
+yxScatter(Cancer$deathRate, Cancer$PctHS25_Over, "HS Education (>24)")
 ```
 
 
@@ -548,8 +550,9 @@ cor(Cancer$deathRate, Cancer$PctBachDeg25_Over)
 ```
 
 ```{r}
-plot(Cancer$PctBachDeg25_Over, Cancer$deathRate, main = "Bachelor (>24)")
-abline(lm(Cancer$deathRate ~ Cancer$PctBachDeg25_Over), lty = 'dashed', lwd = 2, col = 'red')
+#plot(Cancer$PctBachDeg25_Over, Cancer$deathRate, main = "Bachelor (>24)")
+#abline(lm(Cancer$deathRate ~ Cancer$PctBachDeg25_Over), lty = 'dashed', lwd = 2, col = 'red')
+yxScatter(Cancer$PctBachDeg25_Over, Cancer$deathRate, "Bachelor's Degree (>24)")
 ```
 
 
@@ -575,13 +578,16 @@ cor(subset(Cancer,
 Both the scatterplots below and the regression lines imposed on them provide further support that there is indeed a relationship between these two variabes and `MedianAge`, indicating that `MedianAge` may confound the relationship between these two and `deathRate`. Therefore, this should be taken into account when modelling the relation of interest, in order to isolate the effect of the family variables on the death rate.
 
 ```{r}
-plot(Cancer$MedianAge, Cancer$PercentMarried, main = "Age vs PercentMarried")
-abline(lm(PercentMarried ~ MedianAge, data = Cancer), lty = 'dashed', lwd = 2, col = 'red')
+#plot(Cancer$MedianAge, Cancer$PercentMarried, main = "Age vs PercentMarried")
+#abline(lm(PercentMarried ~ MedianAge, data = Cancer), lty = 'dashed', lwd = 2, col = 'red')
+yxScatter(Cancer$PercentMarried, Cancer$MedianAge, "Age vs PercentMarried")
+
 ```
 
 ```{r}
-plot(Cancer$MedianAge, Cancer$AvgHouseholdSize, main = "Age vs Average household size")
-abline(lm(AvgHouseholdSize ~ MedianAge, data = Cancer), lty = 'dashed', lwd = 2, col = 'red')
+#plot(Cancer$MedianAge, Cancer$AvgHouseholdSize, main = "Age vs Average household size")
+#abline(lm(AvgHouseholdSize ~ MedianAge, data = Cancer), lty = 'dashed', lwd = 2, col = 'red')
+yxScatter(Cancer$AvgHouseholdSize, Cancer$MedianAge, "Age vs Household Size")
 ```
 
 
@@ -595,8 +601,9 @@ cor(subset(Cancer, select = c("PctBlack", "PctUnemployed16_Over")),
 ```
 
 ```{r}
-plot(Cancer$PctBlack, Cancer$PctUnemployed16_Over, main = "Age vs PercentMarried")
-abline(lm(PctUnemployed16_Over ~ PctBlack, data = Cancer), lty = 'dashed', lwd = 2, col = 'red')
+#plot(Cancer$PctBlack, Cancer$PctUnemployed16_Over, main = "Age vs PercentMarried")
+#abline(lm(PctUnemployed16_Over ~ PctBlack, data = Cancer), lty = 'dashed', lwd = 2, col = 'red')
+yxScatter(Cancer$PctUnemployed16_Over, Cancer$PctBlack, "Percent Unemployed vs Black")
 ```
 
 

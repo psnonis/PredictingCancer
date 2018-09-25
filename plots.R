@@ -1,3 +1,11 @@
+# font.add.google('Gloria Hallelujah', 'gloria')
+# showtext.auto(enable = T)
+# family <- 'gloria'
+
+family <- 'sans'
+
+options(warn=-1)
+
 yxScatter <- function(y, x = NA, title = NA)
 {
     if(is.na(title))
@@ -11,6 +19,10 @@ yxScatter <- function(y, x = NA, title = NA)
             t <- paste(tail(strsplit(deparse(substitute(x)), '\\$')[[1]], 1), 'vs.',
                        tail(strsplit(deparse(substitute(y)), '\\$')[[1]], 1))
         }
+    }
+    else
+    {
+        t <- title
     }
 
     if(is.na(x))
@@ -26,10 +38,10 @@ yxScatter <- function(y, x = NA, title = NA)
         geom_point(size = 4, alpha = 0.5, color = Cancer$color) +
         theme_wsj() +
         theme(legend.position = 'none',
-              text = element_text(size = 16, family = 'gloria'),
-              title = element_text(size = 30, family = 'gloria'),
+              text = element_text(size = 12, family = family),
+              title = element_text(size = 16, family = family),
               plot.title = element_text(hjust = 0.5)) +
-    ggtitle(t)
+        ggtitle(t)
 
     if(is.na(x))
     {
@@ -41,7 +53,61 @@ yxScatter <- function(y, x = NA, title = NA)
     }
 }
 
-boxHist <- function(v, title = NA)
+boxHist <- function(v, title = NA, subtitle = NA)
+{
+    if(is.na(title))
+    {
+        t <- tail(strsplit(deparse(substitute(v)), '\\$')[[1]], 1)
+    }
+    else
+    {
+        t <- title
+    }
+
+    vLen    <- length(v)
+    vMin    <- min(v, na.rm = T)
+    vMax    <- max(v, na.rm = T)
+    vBins   <- sqrt(vLen)
+    vMean   <- mean(v, na.rm = T)
+    vMedian <- median(v, na.rm = T)
+    vSD     <- sd(v)
+
+    p       <- wsj_pal(palette = 'colors6')(6)
+
+    b <- qplot(x = 1, y = v) +
+        geom_boxplot(fill = p[4]) +
+        coord_flip() +
+        theme_wsj() +
+        scale_color_wsj() +
+        theme(legend.position = 'none',
+              text = element_text(size = 16, family = family),
+              title = element_text(size = 24, family = family),
+              plot.title = element_text(hjust = 0.5),
+              axis.text.y = element_blank()) +
+        ggtitle(t)
+
+    h <- qplot(x = v, geom = 'histogram', bins = vBins) +
+        geom_histogram(fill= p[4], bins = vBins) +
+        geom_vline(aes(xintercept = vMean),   size = 1, color = p[1], linetype = 'dashed') +
+        geom_vline(aes(xintercept = vMedian), size = 1, color = p[1], linetype = 'solid') +
+        theme_wsj() +
+        scale_color_wsj() +
+        theme(legend.position = 'none',
+              title = element_blank(),
+              plot.title = element_blank())
+
+    ggarrange(b, h, heights = c(2,3), align = 'hv', ncol = 1, nrow = 2)
+
+    #xFit <- seq(vMin, vMax, length.out = 100)
+    #yFit <- dnorm(xFit, mean = vMean, sd = vSD)
+    #yFit <- yFit * diff(h$mids[1:2]) * vLen
+
+    #x <- lines(xFit, yFit, col = '#5E4FA2C0', lwd = 3)
+    #x <- abline(v = vMean, col = '#3288BDC0', lwd = 3, lty = 1)
+    #x <- abline(v = vMedian, col = '#3288BDC0', lwd = 3, lty = 2)
+}
+
+boxHist_ <- function(v, title = NA)
 {
     if(is.na(title))
     {
