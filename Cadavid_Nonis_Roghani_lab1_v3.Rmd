@@ -1,50 +1,40 @@
 ---
-title: An Exploratory Analysis of Cancer Incidence and Mortality to Identify High-Risk
-  Communities and Improve Survival
+title: An Exploratory Analysis of Cancer Incidence and Mortality
+subtitle: Identifying High-Risk
+  Communities to Improve Survival
 author: "Ramiro Cadavid, Pri Nonis, Payman Roghani"
 date: "September 24, 2018"
 output:
+  pdf_document:
+      toc: true
   html_document:
-    df_print: paged
-  pdf_document: default
+    toc: true
+    toc_float: true
+mainfont: Arial
+always_allow_html: yes
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(fig.width=12, fig.height=8)
-```
 
-##  Setup
-
-```{r include=FALSE}
 source("install.R")
 source("plots.R")
 source("outliers.R")
-options(repr.plot.width=5, repr.plot.height=5)
 ```
 
-## Introduction
+# 1. Introduction
 
 In this project our efforts are focused on the analysis of data included in the csv file provided, to primarily understand the potential relationship between different parameters and the incidences of cancer across counties in the US. The main objectives are:
 >1. To understand factors that predict cancer mortality rate, with the ultimate aim of identifying communities for social interventions.
 >2. To determine which interventions are likely to have the most impact.
 
 
-### Cancer Data
+## Cancer Dataset
 
 ```{r}
 Cancer <- read.csv('cancer.csv', header = T, as.is = T, row.names = 1) # load the cancer dataset
 ```
-
-```{r fig.height=6, fig.width=6, collapse=TRUE, comment=NA, paged.print=TRUE}
-#summary(Cancer) #summary statistics
-```
----
-
-```{r collapse = TRUE, comment=NA}
-#str(Cancer, max.level = 1, strict.width = "wrap")
-```
----
 
 ```{r collapse = TRUE, comment=NA}
 colnames(Cancer)
@@ -57,6 +47,8 @@ print(paste0('Number of columns: ', ncol(Cancer)))
 The **cancer.csv** file contains 29 variables and 3,047 observations. Each observation (i.e. row) includes data for a county across the US. The variables are mostly numbers and integers, except for 2 that are factors (`binnedInc` and `Geography`).
 
 Taking a first look at the data, we wanted to do some spasial data exploration. Cancer affects a significant population and the effect is felt mostly uniformly across the country.
+
+## Geographical Analysis of the Dataset
 
 Before we could do this we needed to augment our dataset with additional geocoordinate details. We were able to obtain that data from the website of the Census Beauru at census.gov/geo/maps-data. After some minor data manipulations, we were able to join the two datasets using the **Geography** variable.
 
@@ -91,7 +83,7 @@ Below, we explain the variables in detail and provide our assessment of the qual
 
 >data on smoking and obesity and other cancer risk factors could've been very helpful
 
-#### Variables
+## Variables
 
 * Cancer data:
     + `avgAnnCount`: The average number of new cancer cases per year per county for years 2009-2013
@@ -145,7 +137,7 @@ Below, we explain the variables in detail and provide our assessment of the qual
     + `deathRate`: Death rate per county       
 
 
-#### Evaluation of Dataset and Variables
+### Evaluation of Dataset and Variables
 
 Based on the outputs from diagnostic and summary statistics functions, as well as further univariate analysis, using relevant charts, below we describe our evaluation of the dataset and its variables. Since definition of most variables was not provided to us, our first step was to ensure understanding of what exactly such variables represent. We also evaluated the data to identify potentially erroneous values, extreme outliers and variables that might require transformation.
 
@@ -283,7 +275,7 @@ print('Pct_PersonalIsure')
 summary(Pct_PersonalIsure)
 ```
 
-#### Data Transformations
+### Data Transformations
 
 Based on the data evaluation mentiond before and additional analysis, we are transforming some of the valuables that have issues, as explained below. 
 
@@ -302,7 +294,7 @@ We will use the State variable to do more aggregate analysis.
 Cancer <- separate(Cancer, col = Geography, into = c("County","State"), sep = ", ", remove = FALSE)
 ```
 
-#### Median Age Corrections
+### Median Age Corrections
 
 The Median Age variable contained several observations that were larger than 100. As we have determined, based on the median, that this variable is given in terms of years these obeservations did not make sense. However, looking at the clustering pattern it was reasonable to assume that these specific values were given in terms of months and not years.
 
@@ -346,7 +338,7 @@ Cancer$avgAnnCount[Cancer$avgAnnCount==1962.667684] <- NA # remove just the anom
 Cancer$incidenceRate <- Cancer$avgAnnCount / Cancer$popEst2015 * 100000 # new cancer cases per 100,000 persons per year
 ```
 
-# Univariate Analysis of Key Variables
+# 2. Univariate Analysis of Key Variables
 
 Even though the presentation of this section takes a linear form, the actual analysis of key variables was an iterative process. The key variables were chosen based on:
 * Our initial hypotheses regarding variables were potentially related to `deathRate`.
@@ -355,7 +347,7 @@ Even though the presentation of this section takes a linear form, the actual ana
 
 After selecting the key variables, our approach was to focus on assessing the quality of the data (as partly explained in the Introduction) and detecting features, through univariate analysis, that are important to include when modelling the relationships of interest, such as particular features in the distributions, unusual concentrations of observations around certain values, the presence of outliers and extreme outliers, among others.
 
-### Death Rate
+## Death Rate
 
 Death rate's distribution is symmetric and bell-shaped, with a small amount of outliers at both sides of the mean (2.1% of outliers, with 0.03% of extreme outliers). However, these outliers are still within a reasonable range and do not seem to be errors in the data. Furthermore, the observation corresponding to the only extreme outlier does not look atypical based on the values of the other variables.
 
@@ -377,7 +369,7 @@ outliers.summ(Cancer, 'deathRate')
 Cancer[Cancer$deathRate > 300, ]
 ```
 
-### Incidence (DEATILS MIGHT BE HIDDEN TO SAVE SPACE)
+## Incidence
 
 Looking at the frequency of unique values in 'AvgAnnCount', we found that 206 observations contain the value 1962.667684. This is very likely an error because the values in this variable should all be integers, and in some cases this value is higher than the county population.
 
@@ -413,7 +405,7 @@ outliers.summ(Cancer, 'avgAnnCount')
 ```
 
 
-### Incidence Rate
+## Incidence Rate
 
 The distribution of the incidence rate is unimodal and positively skewed, with 46 outliers and 1 extreme outlier. Since these values represent only 1.5% of observations and there is no furhter evidence that they are errors, they will be kept, but should be taken into account when modelling the relationship between incidence and death rates.
 
@@ -429,7 +421,7 @@ boxHist(Cancer$incidenceRate, "Cancer Incidence Rate", "New Diagnosed Cases per 
 outliers.summ(Cancer, 'incidenceRate')
 ```
 
-### Median Income
+## Median Income
 
 There are two income variables available: binned income and median income. From these two, We chose median income as our key variable because it is more granular than binned income and, second, because the width of the binned income seem to have been defined to have a similar number of observations in each bin, which is not useful to observe its distribution, and the cutoffs chosen make the charts hard to read.
 
@@ -526,7 +518,7 @@ outliers.summ(Cancer, "PctBachDeg25_Over")
 
 
 
-### Poverty percent
+### Poverty Percentage
 
 The distribution of `povertyPercent` is unimodal and positively skewed. This is reflected by the fact that all outliers are at the right of the mean. Taking a deeper dive into the outliers, we found that only 3 are extreme while 66 are mild. For this reason, and because we did not find other indication that the outliers or other values were errors, we will keep all data from this variable.
 
@@ -540,7 +532,7 @@ summary(Cancer$povertyPercent)
 boxHist(Cancer$povertyPercent, "Percentage age 25 or older with up to bachelors degree")
 ```
 
-Extreme outliers
+Extreme Outliers
 ```{r}
 outliers.summ(Cancer, "povertyPercent")
 ```
@@ -564,7 +556,7 @@ Extreme outliers
 outliers.summ(Cancer, "PctEmployed16_Over")
 ```
 
-### Percentage with public coverage
+## Percentage with Public Coverage
 
 The distribution of `PctPublicCoverage` is unimodal and symmetric, with no extreme outliers and only 18 mild outliers (0.6% of observations). For this reason, and because we did not find other indication that the outliers or other values were errors, we will keep all data from this variable. There are also no other particular features from this variables that grant further warnings in modelling the relationship between it and `deathRate`.
 
@@ -584,7 +576,7 @@ outliers.summ(Cancer, "PctPublicCoverage")
 
 
 
-## 3. Analysis of Key Relationships
+# 3. Analysis of Key Relationships
 
 We wanted to find the variables that have strong correlations to the Cancer Incidence (**incedenceRate**), and Cancer Deaths (**deathRate**).
 
@@ -600,7 +592,7 @@ Using a matrix correlation plot and using a ordering algorithm to cluster correl
 corrplot(Cancer.Correlation, method = 'circle', type = 'lower',  order = 'FPC', diag = F)
 ```
 
-### Network Diagram
+## Network Diagrams
 
 A network diagram allows us to connect the variables (nodes) to each other based on their respective correlation (links).
 For this we needed to first respahe the Correlation Matrix we generated in the previous step into a flat list of variable combinations along with their respective correlations.
@@ -691,11 +683,11 @@ visNetwork(nodes.outcomeVariables, links.outcomeVariables, height = '500px', wid
 
 The preceeding visual analysis helped us to pick the strongest candidates to do further data exploration.
 
-### Education
+## Education
 
 As explained above, guided by our hypothesis that the education of the '25 and over' years old group should have a much stronger relationship with deathRate than the '18-24' years old group, which was supported by the correlations between these variables, we will be focusing on the former group.
 
-#### Percentage of Adults with Only a High School Education [PctHS25_over]
+### Percentage of Adults with Only a High School Education [PctHS25_over]
 
 A correlation of $0.4$ between `PctHS25_over` and `deathRate` indicates that there is indeed a relationship between these variables, which is further indicated by plotting them together in a scatterplot, that shows that higher values of percentage of population with only high school tend to be associated to higher death rates (this is also reflected in the regression line added to the scatterplot).
 
@@ -711,7 +703,7 @@ yxScatter(Cancer$deathRate, Cancer$PctHS25_Over, "HS Education (>24)")
 
 
 
-#### Percentage of Adults with atleast a Bachelors Degree [PctBachDeg25_0ver]
+### Percentage of Adults with atleast a Bachelors Degree [PctBachDeg25_0ver]
 
 A correlation of $-0.48$ indicates that there is relationship between `PctBachDeg25_over` and `deathRate`, which is further supported by plotting these variables in a scatterplot, where it can be seen that higher values of percentage of people with bachelors degree are associated to lower levels of death rates. This relationship is  also supported by the regression line included in the scatterplot.
 
@@ -727,11 +719,10 @@ yxScatter(Cancer$PctBachDeg25_Over, Cancer$deathRate, "Bachelor's Degree (>24)")
 
 
 
-### Employment and Poverty
+## Employment and Poverty
 
-<TODO>
 
-#### Percentage of Population in Poverty [povertyPercent]
+### Percentage of Population in Poverty [povertyPercent]
 
 The U.S. government's threshold for poverty in 2015 was $\$24,250$ for a family of four. There is a significant $0.42$ correlation between poverty percentage and Cancer death rates.
 
@@ -745,7 +736,7 @@ yxScatter(Cancer$deathRate, Cancer$povertyPercent, "Poverty Percentage vs Death 
 
 
 
-#### Young Adult and Adult Unemployment Percentage [PctEmployed16_Over]
+### Young Adult and Adult Unemployment Percentage [PctEmployed16_Over]
 
 The percentage of all individuals over `16` years within the county has a significant $-0.41$ correlation to Cancer death rates. It shows that being employed is a strong correlator to surviving Cancer.
 
@@ -759,7 +750,7 @@ yxScatter(Cancer$deathRate, Cancer$povertyPercent, "Unemployment Percentage (>15
 
 
 
-## 4. Analysis of Secondary Effects
+# 4. Analysis of Secondary Effects
 
 Throughout the analyses above, we began to identify that some of the relationships found between `deathRate` and other variables may not only be capturing the direct relationship betwee these variables but of additional variable(s) that may be impacting both. To further assess this systematically, the following network visualization shows the variables that have a correlation higher than 0.4, where each node represents a different variable and each vertex indicates the strength of the relationship between the variables connected.
 
@@ -771,7 +762,7 @@ visNetwork(nodes, links, height = '500px', width = '100%',
 
 ```
 
-### Age and family/householdd
+## Age, Family, and Household Size
 
 `PercentMarried` has a (weak) relation and `AvgHouseholdSize` has a moderate relation with `MedianAge`. Based on these results, we explored this relationship further.
 
@@ -797,7 +788,7 @@ yxScatter(Cancer$AvgHouseholdSize, Cancer$MedianAge, "Age vs Household Size")
 ```
 
 
-### Black Population and Employment
+## Black Population and Employment
 
 Correlation analysis shows that there is a relationship between the percentage of black population and employment, which is further confirmed both by a visual inspection of the scatterplot and the linear regression line charted in this plot. Since employment es related to `deathRate`, its correlation with `PctBlack` may indicate that this variable may be confounding the relationship of interest and thus further modeling needs to take this into account, to isolate the effect of unemployment on death rate.
 
@@ -813,7 +804,7 @@ yxScatter(Cancer$PctUnemployed16_Over, Cancer$PctBlack, "Percent Unemployed vs B
 ```
 
 
-### Death Rates by State
+## Death Rates by State
 
 A boxplot containing different location measures of `deathRate` by `State` shows that these values vary measures vary significantly across state. Since `State` may be capturing several state-level characteristics that may in turn affect other variables that have a relation with `deathRate`, it is recommended to include state-level effects when modeling the relation of interest, to control for confounding these state-level factors.
 
@@ -821,3 +812,6 @@ A boxplot containing different location measures of `deathRate` by `State` shows
 yxBox(Cancer$deathRate, Cancer$State, 'Cancer Death Rate by State')
 ```
 
+# 5. Conclusion
+
+<TODO>
