@@ -5,8 +5,9 @@ source('load.R')
 # Maps
 
 source('maps.R')
+map_setup()
 
-map1()
+map_us_deathRate()
 map2()
 map3()
 
@@ -44,6 +45,7 @@ links$color     <- ifelse(links$correlation < 0, 'red', 'green')
 
 links.deathRate     <- links[links$from ==     'deathRate',]
 links.incidenceRate <- links[links$from == 'incidenceRate',]
+links.bothRate      <- rbind(links.deathRate, links.incidenceRate)
 
 nodes <- data.frame('id' = names(Cancer.Numerical))
 
@@ -57,9 +59,21 @@ nodes$color.highlight.border     <- 'darkred'
 nodes$color.background[nodes$id=='deathRate'    ] = 'navy'
 nodes$color.background[nodes$id=='incidenceRate'] = 'purple'
 
-visNetwork(nodes, links.deathRate)
-visNetwork(nodes, links.incidenceRate)
-visNetwork(nodes, rbind(links.incidenceRate,links.deathRate))
+nodes.deathRate <- nodes[nodes$id %in% c(as.vector(links.deathRate$to),'deathRate'),]
+nodes.incidenceRate <- nodes[nodes$id %in% c(as.vector(links.incidenceRate$to),'incidenceRate'),]
+nodes.bothRate <- nodes[nodes$id %in% unique(c(as.vector(links.incidenceRate$to),
+                                               as.vector(links.deathRate$to),
+                                               'incidenceRate',
+                                               'deathRate')),]
+
+
+n <- rbind(nodes.deathRate, nodes.incidenceRate)
+l <- rbind(links.deathRate, links.incidenceRate)
+m <- n[!duplicated(t(apply(n, 1, sort))),]
+m
+visNetwork(nodes.deathRate, links.deathRate)
+visNetwork(nodes.incidenceRate, links.incidenceRate)
+visNetwork(nodes.bothRate, rbind(links.incidenceRate,links.deathRate))
 
 ## Top Correlated Variables to deathRate
 
